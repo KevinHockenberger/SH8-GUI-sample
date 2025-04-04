@@ -100,5 +100,6 @@ namespace SH8_Sample.ViewModels
       }
     }
     #endregion
+    public bool Dispose() { /* code that should run to clean up resources */ return true; }
   }
 }
