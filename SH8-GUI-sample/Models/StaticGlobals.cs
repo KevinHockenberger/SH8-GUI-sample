@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MVVM_template.Models
+namespace SH8_Sample.Models
 {
   public static class StaticGlobals
   {

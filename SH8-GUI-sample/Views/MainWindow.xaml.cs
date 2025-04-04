@@ -1,4 +1,4 @@
-﻿using MVVM_template.ViewModels;
+﻿using SH8_Sample.ViewModels;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,9 +10,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace MVVM_template
-{
-  /// <summary>
+namespace SH8_Sample
+{  /// <summary>
   /// Interaction logic for MainWindow.xaml
   /// </summary>
   public partial class MainWindow : Window
@@ -29,4 +28,4 @@ namespace MVVM_template
       InitializeComponent();
     }
   }
-}
+} 

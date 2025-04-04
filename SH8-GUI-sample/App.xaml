@@ -1,8 +1,8 @@
 ﻿<Application
-  x:Class="MVVM_template.App"
+  x:Class="SH8_Sample.App"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:local="clr-namespace:MVVM_template"
+  xmlns:local="clr-namespace:SH8_Sample"
   StartupUri="Views/MainWindow.xaml">
   <Application.Resources>
     <!--
