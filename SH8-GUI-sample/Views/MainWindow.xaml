@@ -7,18 +7,20 @@
   xmlns:local="clr-namespace:SH8_Sample"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:vm="clr-namespace:SH8_Sample.ViewModels"
-  Title="my MVVM template"
+  Title="Sherlock 8 WPF sample application"
   Width="377"
   Height="359"
   d:DataContext="{d:DesignInstance vm:MainWindowViewModel}"
+  Closing="Window_Closing"
   FontSize="20"
-  mc:Ignorable="d" Initialized="Window_Initialized" Closing="Window_Closing">
+  Initialized="Window_Initialized"
+  mc:Ignorable="d" Icon="/Include/FCTHex48.png">
   <!--  if you want to assign datacontext in xaml only use the following  -->
   <!--<Window.DataContext>
     <vm:MainWindowViewModel />
   </Window.DataContext>-->
   <Window.Resources>
-    <ResourceDictionary>
+    <!--<ResourceDictionary>
       <SolidColorBrush x:Key="myButtonColor" Color="#FFB7CAAD" />
       <Style TargetType="Button">
         <Style.Setters>
@@ -27,64 +29,52 @@
         </Style.Setters>
       </Style>
       <Converters:BoolToBrushColorConverter x:Key="BoolToColorConverter" />
-    </ResourceDictionary>
+    </ResourceDictionary>-->
 
   </Window.Resources>
   <!--
     d:XXX attributes are for design-time data binding
     d:DataContext="{d:DesignInstance vm:MainWindowViewModel}"
-    MAKE SURE ALL BINDING IS TO THE PUBLIC PROPERTY, NOT THE PRIVATE VARIABLE
   -->
   <DockPanel>
-    <StackPanel DockPanel.Dock="Top">
 
-      <!--  no clck event, instead bind to a command  -->
+      <Grid
+        DockPanel.Dock="Bottom"
+        >
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+      <Label Content="total"  FontSize="10" Padding="2" VerticalContentAlignment="Center"/>
+      <Label Content="{Binding TotalString}" d:Content="value 1" Grid.Column="1"/>
+      <Label Content="pass"  FontSize="10" Padding="2" VerticalContentAlignment="Center" Grid.Column="2"/>
+      <Label Content="{Binding PassString}" d:Content="value 2" Grid.Column="3"/>
+      <Label Content="fail"  FontSize="10" Padding="2" VerticalContentAlignment="Center" Grid.Column="4"/>
+      <Label Content="{Binding FailString}" d:Content="value 3" Grid.Column="5"/>
+      <Label Content="attribute"  FontSize="10" Padding="2" VerticalContentAlignment="Center" Grid.Column="6"/>
+      <Label Content="{Binding AttributeString}" d:Content="value 4" Grid.Column="7"/>
+    </Grid>
+    <StackPanel Width="200" DockPanel.Dock="Right">
       <Button
-        Margin="10"
-        Command="{Binding DoSomethingCommand}"
-        CommandParameter="Button"
-        Content="click me" />
-
-      <StackPanel Orientation="Horizontal">
-        <Label Content="a string:" />
-        <!--  content is set to a string property  -->
-        <Label d:Content="ABC" Content="{Binding SomethingString}" />
-      </StackPanel>
-
-      <StackPanel Orientation="Horizontal">
-        <Label Content="convert bool to color:" />
-        <!--  must use a converter to convert a boolean to a visibility setting  -->
-        <Label Background="{Binding IsSomethingBool, Converter={Converters:BoolToBrushColorConverter}}" Content="color" />
-      </StackPanel>
-
-      <StackPanel Orientation="Horizontal">
-        <Label Content="convert bool to visible:" />
-        <Label
-          d:Visibility="Collapsed"
-          Content="Hello World"
-          Visibility="{Binding IsSomethingBool, Converter={StaticResource BoolToVis}}" />
-        <Label Content="Goodbye World" Visibility="{Binding IsNotSomethingBool, Converter={StaticResource BoolToVis}}" />
-      </StackPanel>
-
-      <StackPanel Orientation="Horizontal">
-        <Label Content="value from dictionary:" />
-        <Label d:Content="zero" Content="{Binding Path=MyDictionaryValue}" />
-      </StackPanel>
-    </StackPanel>
-    <StackPanel VerticalAlignment="Bottom" DockPanel.Dock="Bottom">
-      <Label Content="{Binding MyString}" />
-      <!--
-        not binding to MyString (Text="{Binding MyString}") or else the button would not matter
-        you could also use one-way binding (Text="{Binding MyString, Mode=OneWay}")
-      -->
-      <TextBox x:Name="txtMyString" d:Text="myString" />
-      <!--  command with a parameter referencing a named textbox  -->
+        Margin="5,10,5,10"
+        Padding="8"
+        Background="LimeGreen"
+        Command="{Binding RunMachineCommand}"
+        Content="START" />
       <Button
-        Margin="10"
-        Command="{Binding DoSomethingWithStringCommand}"
-        CommandParameter="{Binding Text, ElementName=txtMyString}"
-        Content="param cmd, click me" />
+        Margin="5,10,5,10"
+        Padding="8"
+        Background="#FFFF3030"
+        Command="{Binding StopCommand}"
+        Content="STOP"
+        Foreground="GhostWhite" />
     </StackPanel>
-    <StackPanel />
+    <Grid></Grid>
   </DockPanel>
 </Window>

@@ -7,7 +7,20 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>FCT.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Include\FCTHex48.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="FCT.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Include\FCTHex48.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">

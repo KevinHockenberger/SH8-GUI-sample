@@ -44,7 +44,7 @@ namespace SH8_Sample
       }
       Width = Settings.Default.LastSavedWidth;
       Height = Settings.Default.LastSavedHeight; if (Height < 0) { Height = 0; }
-      Top = 9000;// Settings.Default.LastSavedTop; 
+      Top = Settings.Default.LastSavedTop; 
       Left = Settings.Default.LastSavedLeft;
       WindowState = Settings.Default.LastWindowState == "Maximized" ? WindowState.Maximized : WindowState.Normal;
       // vaidate the window is somewhat on screen and large enough to view
