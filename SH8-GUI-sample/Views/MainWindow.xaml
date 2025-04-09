@@ -13,34 +13,49 @@
   d:DataContext="{d:DesignInstance vm:MainWindowViewModel}"
   Closing="Window_Closing"
   FontSize="20"
+  Icon="/Include/FCTHex48.png"
   Initialized="Window_Initialized"
-  mc:Ignorable="d" Icon="/Include/FCTHex48.png">
+  mc:Ignorable="d">
   <!--  if you want to assign datacontext in xaml only use the following  -->
   <!--<Window.DataContext>
     <vm:MainWindowViewModel />
   </Window.DataContext>-->
   <Window.Resources>
-    <!--<ResourceDictionary>
-      <SolidColorBrush x:Key="myButtonColor" Color="#FFB7CAAD" />
+    <ResourceDictionary>
+      <!--<SolidColorBrush x:Key="myButtonColor" Color="#FFB7CAAD" />
       <Style TargetType="Button">
         <Style.Setters>
           <Setter Property="Background" Value="{StaticResource myButtonColor}" />
           <Setter Property="Foreground" Value="Black" />
         </Style.Setters>
-      </Style>
-      <Converters:BoolToBrushColorConverter x:Key="BoolToColorConverter" />
-    </ResourceDictionary>-->
-
+      </Style>-->
+      <Converters:DoubleToStringFormatter x:Key="DoubleToStringFormatter" />
+      <Converters:IntegerToStringFormatter x:Key="IntegerToStringFormatter" />
+    </ResourceDictionary>
   </Window.Resources>
   <!--
     d:XXX attributes are for design-time data binding
     d:DataContext="{d:DesignInstance vm:MainWindowViewModel}"
   -->
   <DockPanel>
-
-      <Grid
-        DockPanel.Dock="Bottom"
-        >
+    <Grid DockPanel.Dock="Top">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+      <Label Grid.Column="0" Content="file" />
+      <Button
+        Grid.Column="2"
+        Command="{Binding ConnectCommand}"
+        Content="load" />
+      <TextBox
+        Grid.Column="1"
+        VerticalContentAlignment="Center"
+        d:Text="C:\\ProgramData\\Teledyne DALSA\\Sherlock8x64\\programs\\simple0.sh8"
+        Text="{Binding Filename}" />
+    </Grid>
+    <Grid DockPanel.Dock="Bottom">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="Auto" />
         <ColumnDefinition Width="*" />
@@ -51,30 +66,99 @@
         <ColumnDefinition Width="Auto" />
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
-      <Label Content="total"  FontSize="10" Padding="2" VerticalContentAlignment="Center"/>
-      <Label Content="{Binding TotalString}" d:Content="value 1" Grid.Column="1"/>
-      <Label Content="pass"  FontSize="10" Padding="2" VerticalContentAlignment="Center" Grid.Column="2"/>
-      <Label Content="{Binding PassString}" d:Content="value 2" Grid.Column="3"/>
-      <Label Content="fail"  FontSize="10" Padding="2" VerticalContentAlignment="Center" Grid.Column="4"/>
-      <Label Content="{Binding FailString}" d:Content="value 3" Grid.Column="5"/>
-      <Label Content="attribute"  FontSize="10" Padding="2" VerticalContentAlignment="Center" Grid.Column="6"/>
-      <Label Content="{Binding AttributeString}" d:Content="value 4" Grid.Column="7"/>
+      <Label
+        Padding="2"
+        VerticalContentAlignment="Center"
+        Content="total"
+        FontSize="10" />
+      <Label
+        Grid.Column="1"
+        d:Content="0"
+        Content="{Binding Total, Converter={Converters:IntegerToStringFormatter}}" />
+      <Label
+        Grid.Column="2"
+        Padding="2"
+        VerticalContentAlignment="Center"
+        Content="pass"
+        FontSize="10" />
+      <Label
+        Grid.Column="3"
+        d:Content="0"
+        Content="{Binding Pass, Converter={Converters:IntegerToStringFormatter}}" />
+      <Label
+        Grid.Column="4"
+        Padding="2"
+        VerticalContentAlignment="Center"
+        Content="fail"
+        FontSize="10" />
+      <Label
+        Grid.Column="5"
+        d:Content="0"
+        Content="{Binding Fail, Converter={Converters:IntegerToStringFormatter}}" />
+      <Label
+        Grid.Column="6"
+        Padding="2"
+        VerticalContentAlignment="Center"
+        Content="attribute"
+        FontSize="10" />
+      <Label
+        Grid.Column="7"
+        d:Content="0"
+        Content="{Binding Attribute, Converter={Converters:DoubleToStringFormatter}}" />
     </Grid>
     <StackPanel Width="200" DockPanel.Dock="Right">
+      <StackPanel Orientation="Horizontal">
+        <Label
+          VerticalContentAlignment="Bottom"
+          Content="connected:"
+          FontSize="10" />
+        <Label
+          VerticalContentAlignment="Bottom"
+          d:Content="False"
+          Content="{Binding IsConnected}"
+          FontSize="12"
+          FontWeight="Bold" />
+        <Label
+          VerticalContentAlignment="Bottom"
+          d:Content="False"
+          Content="{Binding IsNotConnected}"
+          FontSize="12"
+          FontWeight="Bold" />
+      </StackPanel>
+      <StackPanel Orientation="Horizontal">
+        <Label
+          VerticalContentAlignment="Bottom"
+          Content="in auto:"
+          FontSize="10" />
+        <Label
+          VerticalContentAlignment="Bottom"
+          d:Content="False"
+          Content="{Binding IsInAuto}"
+          FontSize="12"
+          FontWeight="Bold" />
+      </StackPanel>
       <Button
         Margin="5,10,5,10"
         Padding="8"
         Background="LimeGreen"
-        Command="{Binding RunMachineCommand}"
-        Content="START" />
+        Command="{Binding StartCommand}"
+        Content="START"
+        Foreground="Black"
+         />
       <Button
         Margin="5,10,5,10"
         Padding="8"
-        Background="#FFFF3030"
+        Background="#FFFF7E71"
         Command="{Binding StopCommand}"
         Content="STOP"
-        Foreground="GhostWhite" />
+        Foreground="Black"
+         />
     </StackPanel>
-    <Grid></Grid>
+    <Border
+      x:Name="ImageArea"
+      HorizontalAlignment="Stretch"
+      VerticalAlignment="Stretch"
+      BorderThickness="4" />
+
   </DockPanel>
 </Window>

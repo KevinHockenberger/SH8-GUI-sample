@@ -1,12 +1,17 @@
-﻿using SH8_Sample.Models;
+﻿using ipeenginectrlLib;
+using SH8_Sample.Models;
+using SH8_Sample.Properties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Input;
+using SH8Res = ipeenginectrlLib.Result;
 
 namespace SH8_Sample.ViewModels
 {
@@ -15,37 +20,95 @@ namespace SH8_Sample.ViewModels
   {
     #region COMMANDS ##################################################################################################################################
 
-    ICommand? startCommand;
-    public ICommand StartCommand => startCommand ??= new Command(() => { IsInAuto = true; }, p => IsNotInAuto); // the return true is whether the button is enabled or not. code or property can be used here
-    ICommand? stopCommand;
-    public ICommand StopCommand => stopCommand ??= new Command(() => { IsInAuto = false; }, p => IsInAuto); // the return true is whether the button is enabled or not. code or property can be used here
+    ICommand? connectCommand;
+    public ICommand ConnectCommand => connectCommand ??= new Command(ConnectSherlock, p => IsNotConnected); // the return true is whether the button is enabled or not. code or property can be used here
 
-    ICommand? runMachineCommand;
-    public ICommand RunMachineCommand => runMachineCommand ??= new Command(() => Task.Run(RunMachine), p => IsNotInAuto); // the return true is whether the button is enabled or not. code or property can be used here
 
-    private void RunMachine()
+
+    //ICommand? testCommand;
+    //public ICommand TestCommand => testCommand ??= new Command(() => Task.Run(GetData), p => true); 
+
+    private void GetData()
     {
-      IsInAuto = true;
-      while (IsInAuto)
+      if (hSh8 == null) { return; }
+      try
       {
-        // do something
-        Total++;
-        if (Total % 2 == 0) { Pass++; }
-        else { Fail++; }
-        Attribute = (double)Pass / Total;
-        System.Threading.Thread.Sleep(100);
+        Attribute = ((double)hSh8.value("numberA.value"));
+      }
+      catch (Exception)
+      {
       }
     }
 
-    RelayCommand<string?>? doSomethingWithStringCommand;
-    public RelayCommand<string?> DoSomethingWithStringCommand => doSomethingWithStringCommand ??= new RelayCommand<string?>((p) =>
-    {
-      if (p == null) { return; }
-      DoSomethingWithString(p);
-    }, p => true); // the return true is whether the button is enabled or not. code or property can be used here
+    ICommand? stopCommand;
+    public ICommand StopCommand => stopCommand ??= new Command(async () => { await Task.Run(StopMachine); CommandManager.InvalidateRequerySuggested(); }, p => IsConnected && IsInAuto);
 
-    private void DoSomethingWithString(string? s)
+    ICommand? startCommand;
+    public ICommand StartCommand => startCommand ??= new Command(async () => { await Task.Run(RunMachine); CommandManager.InvalidateRequerySuggested(); }, p => IsConnected && IsNotInAuto);
+    private void RunMachine()
     {
+      if (hSh8?.run(-1) != SH8Res.Ok) { return; }
+      hSh8.programLoopCompleted += SherlockLoopComplete;
+      IsInAuto = true;
+    }
+
+    private void SherlockLoopComplete()
+    {
+      GetData();
+    }
+
+    private void StopMachine()
+    {
+      if (hSh8 == null) { return; }
+      if (hSh8.requestStop() != SH8Res.Ok) { return; }
+      int tries = 10;
+      while (hSh8.isRunning())
+      {
+        Thread.Sleep(100); // wait for the machine to stop
+        tries--;
+        if (tries < 0) { break; } // give up after 10 tries
+      }
+      if (hSh8.isRunning())
+      {
+        if (hSh8.requestAbort() != SH8Res.Ok) { return; }
+        while (hSh8.isRunning())
+        {
+          Thread.Sleep(100); // wait for the machine to abort
+          tries--;
+          if (tries < 0) { return; } // cancel
+        }
+      }
+      IsInAuto = false;
+    }
+
+    ipeenginectrlLib.AxIpeEngine? hSh8;
+    private void ConnectSherlock()
+    {
+      try
+      {
+        hSh8 = new();
+        var nResult = hSh8.initialize("default");
+        if (nResult != SH8Res.Ok) { IsConnected = false; return; }
+        //AxipedisplayctrlLib.AxAxIpeDisplay imgWindow = new AxipedisplayctrlLib.AxAxIpeDisplay();
+
+        //System.Windows.Forms.Integration.WindowsFormsHost host = new System.Windows.Forms.Integration.WindowsFormsHost();
+        //host.Child = imgWindow;
+        //Grid grid = new Grid();
+        //grid.Children.Add(host);
+        //this.ImageArea.Child = grid;
+
+        nResult = hSh8.initialize("default");
+        if (nResult != SH8Res.Ok) { IsConnected = false; return; }
+        nResult = hSh8.load(Filename);
+        if (nResult != SH8Res.Ok) { IsConnected = false; return; }
+        //nResult = hSh8.connectDisplay(imgWindow.dspHandle, "workspace_mono8A");
+
+        IsConnected = true;
+      }
+      catch (Exception)
+      {
+        IsConnected = false;
+      }
     }
     #endregion
     #region PROPERTIES ##################################################################################################################################
@@ -55,7 +118,26 @@ namespace SH8_Sample.ViewModels
     {
       this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+    public string IntFormat { get => StaticGlobals.intformat; }
+    public string DecimalFormat { get => StaticGlobals.decimalformat; }
 
+    private bool isConnected;
+    public bool IsConnected
+    {
+      get => isConnected;
+      set
+      {
+        if (isConnected != value)
+        {
+          isConnected = value;
+          OnPropertyChanged(); // trigger the ui to update
+          OnPropertyChanged(nameof(IsNotConnected)); // trigger the ui to also update this property
+        }
+      }
+    }
+
+    // a readonly property. no way to trigger OnPropertyChanged
+    public bool IsNotConnected { get => !IsConnected; }
     private bool isInAuto;
     public bool IsInAuto
     {
@@ -72,37 +154,33 @@ namespace SH8_Sample.ViewModels
     }
 
     // a readonly property. no way to trigger OnPropertyChanged
-    public bool IsNotInAuto { get => !isInAuto; }
-
+    public bool IsNotInAuto { get => !IsInAuto; }
+    public string Filename { get => Settings.Default.LastFilename; set { if (Settings.Default.LastFilename != value) { Settings.Default.LastFilename = value; OnPropertyChanged(); } } }
     private int total = 0;
     public int Total
     {
       get => total;
       // only settable from within the class
-      private set { if (total != value) { total = value; OnPropertyChanged(); OnPropertyChanged(nameof(TotalString)); } }
+      private set { if (total != value) { total = value; OnPropertyChanged(); } }
     }
-    public string TotalString { get => total.ToString(StaticGlobals.intformat); }
     private int pass = 0;
     public int Pass
     {
       get => pass;
-      private set { if (pass != value) { pass = value; OnPropertyChanged(); OnPropertyChanged(nameof(PassString)); } }
+      private set { if (pass != value) { pass = value; OnPropertyChanged(); } }
     }
-    public string PassString { get => pass.ToString(StaticGlobals.intformat); }
     private int fail = 0;
     public int Fail
     {
       get => fail;
-      private set { if (fail != value) { fail = value; OnPropertyChanged(); OnPropertyChanged(nameof(FailString)); } }
+      private set { if (fail != value) { fail = value; OnPropertyChanged(); } }
     }
-    public string FailString { get => fail.ToString(StaticGlobals.intformat); }
     private double attribute = 0;
     public double Attribute
     {
       get => attribute;
-      private set { if (attribute != value) { attribute = value; OnPropertyChanged();OnPropertyChanged(nameof(AttributeString)); } }
+      private set { if (attribute != value) { attribute = value; OnPropertyChanged(); } }
     }
-    public string AttributeString { get => attribute.ToString(StaticGlobals.decimalformat); }
     private string file = string.Empty;
     public string File { get => file; set { if (file != value) { file = value; OnPropertyChanged(); } } }
     #endregion

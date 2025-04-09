@@ -94,5 +94,17 @@ namespace SH8_Sample.Properties {
                 this["LastWindowState"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\ProgramData\\Teledyne DALSA\\Sherlock8x64\\programs\\simple0.sh8")]
+        public string LastFilename {
+            get {
+                return ((string)(this["LastFilename"]));
+            }
+            set {
+                this["LastFilename"] = value;
+            }
+        }
     }
 }

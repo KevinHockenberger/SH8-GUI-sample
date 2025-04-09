@@ -1,5 +1,7 @@
-﻿using SH8_Sample.Properties;
+﻿using SH8_Sample.Models;
+using SH8_Sample.Properties;
 using SH8_Sample.ViewModels;
+using System;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,8 +15,8 @@ using System.Windows.Shapes;
 
 namespace SH8_Sample
 {  /// <summary>
-  /// Interaction logic for MainWindow.xaml
-  /// </summary>
+   /// Interaction logic for MainWindow.xaml
+   /// </summary>
   public partial class MainWindow : Window
   {
     // assigned this way allows backend methods to reference the viewmodel
@@ -44,7 +46,7 @@ namespace SH8_Sample
       }
       Width = Settings.Default.LastSavedWidth;
       Height = Settings.Default.LastSavedHeight; if (Height < 0) { Height = 0; }
-      Top = Settings.Default.LastSavedTop; 
+      Top = Settings.Default.LastSavedTop;
       Left = Settings.Default.LastSavedLeft;
       WindowState = Settings.Default.LastWindowState == "Maximized" ? WindowState.Maximized : WindowState.Normal;
       // vaidate the window is somewhat on screen and large enough to view
@@ -85,5 +87,10 @@ namespace SH8_Sample
         }
       }
     }
+
+    private void Button_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
   }
-} 
+}
