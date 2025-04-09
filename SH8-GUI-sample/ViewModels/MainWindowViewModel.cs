@@ -157,6 +157,7 @@ namespace SH8_Sample.ViewModels
       try
       {
         // get the values from the engine and assign to properties which will update GUI
+        // these Sherlock variables must exist. it will fail if you loaded a program without them
         Total = (double)HSh8.value("total.value");
         Pass = (double)HSh8.value("pass.value");
         Fail = (double)HSh8.value("fail.value");
@@ -176,6 +177,7 @@ namespace SH8_Sample.ViewModels
         // assign all properties to 0
         Total = Pass = Fail = Attribute = 0;
         // assign the values to the engine
+        // these Sherlock variables must exist. it will fail if you loaded a program without them
         HSh8.setValue("total.value", Total);
         HSh8.setValue("pass.value", Pass);
         HSh8.setValue("fail.value", Fail);
@@ -271,8 +273,6 @@ namespace SH8_Sample.ViewModels
     #endregion
 
     #region COMMANDS ##################################################################################################################################
-    //ICommand? connectCommand;
-    //public ICommand ConnectCommand => connectCommand ??= new Command(ConnectSherlock, p => IsNotConnected); // disable button via IsNotConnected property
     ICommand? resetCommand;
     public ICommand ResetCommand => resetCommand ??= new Command(() => Task.Run(ResetVariables), p => true); // always enabled
     ICommand? stopCommand;
