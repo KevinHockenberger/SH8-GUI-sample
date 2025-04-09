@@ -21,7 +21,7 @@
       <Value Profile="(Default)">null</Value>
     </Setting>
     <Setting Name="LastFilename" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\ProgramData\Teledyne DALSA\Sherlock8x64\programs\simple0.sh8</Value>
+      <Value Profile="(Default)">null</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -30,6 +30,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="AxipedisplayctrlLib">
+      <HintPath>Include\AxipedisplayctrlLib.dll</HintPath>
+    </Reference>
     <Reference Include="ipedisplayctrlLib">
       <HintPath>Include\ipedisplayctrlLib.dll</HintPath>
     </Reference>
@@ -54,6 +57,9 @@
     <None Update="Include\FCTHex48.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
+    </None>
+    <None Update="Include\sample_inspection.sh8">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

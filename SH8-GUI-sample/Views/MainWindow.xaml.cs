@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AxipedisplayctrlLib;
 
 namespace SH8_Sample
 {  /// <summary>
@@ -35,9 +36,11 @@ namespace SH8_Sample
     {
       ApplyAppSettings();
       ApplyUserSettings();
+      vm.AssignStatusText("Load a Sherlock program at the top.", 0);
     }
     private void ApplyAppSettings()
     {
+      // assign the last used settings from the application settings file
       if (Settings.Default.UpgradeRequired)
       {
         Settings.Default.Upgrade();
@@ -69,6 +72,7 @@ namespace SH8_Sample
     }
     private void ApplyUserSettings()
     {
+      // any code that should load user/file settings from another config or database
     }
 
     private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -82,15 +86,32 @@ namespace SH8_Sample
           Thread.Sleep(1000);
           if (!vm.Dispose())
           {
-            e.Cancel = true; return; // could not stop ...
+            // could not stop ...
+            e.Cancel = true;
+            vm.AssignStatusText("Could not close application", 4);
+            return;
           }
         }
       }
     }
 
-    private void Button_Click(object sender, RoutedEventArgs e)
+    private void InitSherlock(object sender, RoutedEventArgs e)
     {
-
+      try
+      {
+        vm.ConnectSherlock();
+        AxAxIpeDisplay imgWindow = new AxAxIpeDisplay();
+        System.Windows.Forms.Integration.WindowsFormsHost host = new();
+        host.Child = imgWindow;
+        ImageArea.Child = host;
+        ImageArea.Background = System.Windows.Media.Brushes.Transparent;
+        vm.HSh8?.connectDisplay(imgWindow.dspHandle, "workspace_mono8A");
+        vm.AssignStatusText("Sherlock ready.", 1);
+      }
+      catch (Exception ex)
+      {
+        vm.AssignStatusText(ex.Message, 2);
+      }
     }
   }
 }

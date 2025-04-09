@@ -97,7 +97,7 @@ namespace SH8_Sample.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\ProgramData\\Teledyne DALSA\\Sherlock8x64\\programs\\simple0.sh8")]
+        [global::System.Configuration.DefaultSettingValueAttribute("null")]
         public string LastFilename {
             get {
                 return ((string)(this["LastFilename"]));
