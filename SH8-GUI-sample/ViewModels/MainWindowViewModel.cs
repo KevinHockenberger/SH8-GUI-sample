@@ -80,24 +80,28 @@ namespace SH8_Sample.ViewModels
     public double Pass
     {
       get => pass;
+      // only settable from within the class
       private set { if (pass != value) { pass = value; OnPropertyChanged(); } }
     }
     private double fail = 0;
     public double Fail
     {
       get => fail;
+      // only settable from within the class
       private set { if (fail != value) { fail = value; OnPropertyChanged(); } }
     }
     private double attribute = 0;
     public double Attribute
     {
       get => attribute;
+      // only settable from within the class
       private set { if (attribute != value) { attribute = value; OnPropertyChanged(); } }
     }
     private string statusText = string.Empty;
     public string StatusText
     {
       get => statusText;
+      // only settable from within the class
       private set { if (statusText != value) { statusText = value; OnPropertyChanged(); } }
     }
     public System.Windows.Media.Brush statusBrush = System.Windows.Media.Brushes.Transparent;
@@ -107,11 +111,20 @@ namespace SH8_Sample.ViewModels
       private set { if (statusBrush != value) { statusBrush = value; OnPropertyChanged(); } }
     }
     #endregion
+
     #region METHODS ##################################################################################################################################
     public bool Dispose()
     {
       /* code that should run to clean up resources */
-      HSh8?.disconnect();
+      try
+      {
+        StopMachine();
+        HSh8?.disconnect();
+      }
+      catch (Exception)
+      {
+        return false;
+      }
       return true;
     }
     public void ConnectSherlock()
@@ -125,15 +138,17 @@ namespace SH8_Sample.ViewModels
         if (HSh8.load(Filename) != SH8Res.Ok) { IsConnected = false; return; }
         // connect events
         HSh8.programLoopCompleted += GetSherlockValues;
-
+        // GUI update if bound
         IsConnected = true;
         // load the initial values into the GUI
         GetSherlockValues();
       }
       catch (Exception ex)
       {
-        IsConnected = false;
+        // don't crash on an error. show it
         AssignStatusText($"{ex.Message}", 4);
+        // GUI update if bound
+        IsConnected = false;
       }
     }
     private void GetSherlockValues()
@@ -141,6 +156,7 @@ namespace SH8_Sample.ViewModels
       if (HSh8 == null) { return; }
       try
       {
+        // get the values from the engine and assign to properties which will update GUI
         Total = (double)HSh8.value("total.value");
         Pass = (double)HSh8.value("pass.value");
         Fail = (double)HSh8.value("fail.value");
@@ -148,6 +164,7 @@ namespace SH8_Sample.ViewModels
       }
       catch (Exception ex)
       {
+        // don't crash on an error. show it
         AssignStatusText($"{ex.Message}", 4);
       }
     }
@@ -156,16 +173,19 @@ namespace SH8_Sample.ViewModels
       if (HSh8 == null) { return; }
       try
       {
+        // assign all properties to 0
         Total = Pass = Fail = Attribute = 0;
+        // assign the values to the engine
         HSh8.setValue("total.value", Total);
         HSh8.setValue("pass.value", Pass);
         HSh8.setValue("fail.value", Fail);
         HSh8.setValue("current.value", Attribute);
+        // success
         AssignStatusText("Values reset");
-
       }
       catch (Exception ex)
       {
+        // don't crash on an error. show it
         AssignStatusText($"{ex.Message}", 4);
       }
     }
@@ -173,45 +193,63 @@ namespace SH8_Sample.ViewModels
     {
       try
       {
-        if (HSh8?.run(-1) != SH8Res.Ok) { return; }
+        // start the inspection and get result. if it fails, show that we are not successful and quit
+        if (HSh8?.run(-1) != SH8Res.Ok) { AssignStatusText("Could not start inspection", 4); return; }
+        // GUI update if bound
         IsInAuto = true;
+        // success
         AssignStatusText("Inspection is running", 1);
       }
       catch (Exception ex)
       {
+        // don't crash on an error. show it
         AssignStatusText($"{ex.Message}", 4);
       }
     }
     private void StopMachine()
     {
       if (HSh8 == null) { return; }
-      if (HSh8.requestStop() != SH8Res.Ok) { return; }
-      int tries = 10;
-      while (HSh8.isRunning())
+      try
       {
-        Thread.Sleep(100); // wait for the machine to stop
-        tries--;
-        if (tries < 0) { break; } // give up after 10 tries
-      }
-      if (HSh8.isRunning())
-      {
-        if (HSh8.requestAbort() != SH8Res.Ok) { return; }
+        // request a stop first before trying to abort. if api call fails (returns not ok), abort
+        if (HSh8.requestStop() != SH8Res.Ok) { AssignStatusText("Inspection could not be stopped properly", 4); return; }
+        int tries = 10;
         while (HSh8.isRunning())
         {
-          Thread.Sleep(100); // wait for the machine to abort
+          Thread.Sleep(100); // wait for the machine to stop
           tries--;
-          if (tries < 0)
-          {
-            AssignStatusText("Inspection could not be stopped properly", 4);
-            return;
-          } // cancel
+          if (tries < 0) { break; } // give up after 10 tries
         }
+        if (HSh8.isRunning())
+        {
+          // if we are still running, try to abort
+          if (HSh8.requestAbort() != SH8Res.Ok) { AssignStatusText("Inspection could not be stopped properly", 4); return; }
+          while (HSh8.isRunning())
+          {
+            Thread.Sleep(100); // wait for the machine to abort
+            tries--;
+            if (tries < 0)
+            {
+              // cancel
+              AssignStatusText("Inspection could not be stopped properly", 4);
+              return;
+            }
+          }
+        }
+        // success
+        AssignStatusText("Inspection stopped.", 2);
+        // GUI update if bound
+        IsInAuto = false;
       }
-      AssignStatusText("Inspection stopped.", 2);
-      IsInAuto = false;
+      catch (Exception ex)
+      {
+        // don't crash on an error. show it
+        AssignStatusText(ex.Message, 2);
+      }
     }
     public void AssignStatusText(string text, int level = 0)
     {
+      // this method can be called locally or from the GUI to set a status message and background color
       StatusText = text;
       if (level <= 0) { StatusBrush = System.Windows.Media.Brushes.Transparent; }
       else if (level > 3) { StatusBrush = System.Windows.Media.Brushes.OrangeRed; }
@@ -225,6 +263,7 @@ namespace SH8_Sample.ViewModels
     {
       System.Windows.Application.Current.Dispatcher.Invoke(() =>
       {
+        // clear the status text and background
         StatusText = string.Empty;
         StatusBrush = System.Windows.Media.Brushes.Transparent;
       });

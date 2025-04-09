@@ -140,6 +140,5 @@
       HorizontalAlignment="Stretch"
       VerticalAlignment="Stretch"
       BorderThickness="4" />
-
   </DockPanel>
 </Window>
