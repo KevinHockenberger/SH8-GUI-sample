@@ -87,7 +87,7 @@ namespace SH8_Sample
       try
       {
         // initialize the Sherlock engine
-        vm.ConnectSherlock();
+        if (!vm.ConnectSherlock()) { return; }
         // create a Sherlock image window
         AxAxIpeDisplay imgWindow = new AxAxIpeDisplay();
         // create a WinForms host to use in WPF
