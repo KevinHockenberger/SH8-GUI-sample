@@ -172,7 +172,7 @@ namespace SH8_Sample.ViewModels
     }
     private void ResetVariables()
     {
-      if (HSh8 == null) { return; }
+      if (HSh8 == null) { AssignStatusText("Sherlock not initialized", 3); return; }
       try
       {
         // assign all properties to 0
