@@ -216,7 +216,7 @@ namespace SH8_Sample.ViewModels
         AssignStatusText($"{ex.Message}", 4);
       }
     }
-    private void StopMachine()
+    public void StopMachine()
     {
       if (HSh8 == null) { return; }
       try
