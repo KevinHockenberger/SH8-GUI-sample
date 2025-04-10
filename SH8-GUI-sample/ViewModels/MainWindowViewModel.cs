@@ -120,12 +120,13 @@ namespace SH8_Sample.ViewModels
       {
         StopMachine();
         HSh8?.disconnect();
+        HSh8?.terminate();
+        return true;
       }
       catch (Exception)
       {
-        return false;
       }
-      return true;
+      return false;
     }
     public void ConnectSherlock()
     {
